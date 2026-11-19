@@ -9,13 +9,7 @@ spec:
       namespace: traefik
       sectionName: web
   rules:
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /
-      backendRefs:
-        - name: cat
-          port: 3000
+    # 1. Exact match for /dog
     - matches:
         - path:
             type: Exact
@@ -23,6 +17,8 @@ spec:
       backendRefs:
         - name: dog
           port: 3000
+
+    # 2. Exact matches for /cat and /cate
     - matches:
         - path:
             type: Exact
@@ -30,6 +26,15 @@ spec:
         - path:
             type: Exact
             value: /cate
+      backendRefs:
+        - name: cat
+          port: 3000
+
+    # 3. Catch-all prefix for everything else (optional)
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
       backendRefs:
         - name: cat
           port: 3000
