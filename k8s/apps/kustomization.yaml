@@ -4,3 +4,4 @@ resources:
   - dog.yaml
   - cat.yaml
   - routes.yaml
+  - ReferenceGrant.yaml
