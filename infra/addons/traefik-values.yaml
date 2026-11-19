@@ -1,0 +1,27 @@
+providers:
+  kubernetesGateway:
+    enabled: true
+  kubernetesIngress:
+    enabled: false
+# Helm creates GatewayClass 'traefik' and Gateway 'traefik-gateway' here.
+gateway:
+  enabled: true
+  name: traefik-gateway
+  listeners:
+    web:
+      port: 8000
+      protocol: HTTP
+      namespacePolicy:
+        from: All
+gatewayClass:
+  enabled: true
+  name: traefik
+# k3s ServiceLB exposes the LoadBalancer service on the EC2 public IP:80.
+service:
+  type: LoadBalancer
+ports:
+  web:
+    exposedPort: 80
+  websecure:
+    expose:
+      default: false

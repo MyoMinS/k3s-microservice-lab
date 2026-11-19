@@ -1,0 +1,15 @@
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+!*.tfvars.example
+*.tfbackend
+*.pem
+*.key
+kubeconfig*
+node_modules/
+__pycache__/
+*.pyc
+.env
+.terraform*

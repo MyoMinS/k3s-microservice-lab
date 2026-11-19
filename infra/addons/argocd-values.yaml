@@ -1,0 +1,4 @@
+server:
+  service:
+    type: ClusterIP
+# Access via kubectl port-forward rather than exposing the admin UI publicly.

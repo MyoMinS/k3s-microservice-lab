@@ -1,0 +1,86 @@
+name: Build and deploy via GitOps
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/**'
+      - '.github/workflows/build-push-gitops.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+
+concurrency:
+  group: gitops-main
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Check required configuration
+        env:
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          PROJECT_NAME: ${{ vars.PROJECT_NAME }}
+          ROLE_ARN: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}
+        run: |
+          : "${AWS_REGION:?Set AWS_REGION repository variable}"
+          : "${PROJECT_NAME:?Set PROJECT_NAME repository variable}"
+          : "${ROLE_ARN:?Set AWS_GITHUB_ACTIONS_ROLE_ARN secret}"
+
+      - name: Test both backends
+        run: |
+          (cd apps/dog && npm test)
+          (cd apps/cat && npm test)
+          python3 -m unittest discover -s scripts -p 'test_*.py'
+
+      - name: Assume AWS role using GitHub OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Login to ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push immutable images
+        env:
+          REGISTRY: ${{ steps.ecr.outputs.registry }}
+          PROJECT_NAME: ${{ vars.PROJECT_NAME }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          : "${PROJECT_NAME:?Set PROJECT_NAME to the Terraform project_name}"
+          for app in dog cat; do
+            image="${REGISTRY}/${PROJECT_NAME}-${app}:${SHA}"
+            docker build -t "$image" "apps/${app}"
+            docker push "$image"
+          done
+
+      - name: Commit new image tags to Git (Argo CD watches main)
+        env:
+          REGISTRY: ${{ steps.ecr.outputs.registry }}
+          PROJECT_NAME: ${{ vars.PROJECT_NAME }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          python3 scripts/update_images.py
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add k8s/apps/dog.yaml k8s/apps/cat.yaml
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "chore(gitops): deploy ${SHA}"
+          # Retrying with a fresh checkout prevents overwriting other main commits.
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then exit 0; fi
+            git fetch origin main
+            git rebase origin/main
+          done
+          exit 1

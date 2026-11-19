@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cat
+  namespace: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cat
+  template:
+    metadata:
+      labels:
+        app: cat
+    spec:
+      containers:
+        - name: cat
+          # CI replaces this value with the ECR URL and the immutable commit SHA.
+          image: 000000000000.dkr.ecr.us-east-1.amazonaws.com/k3s-microservice-lab-cat:bootstrap
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop: [ALL]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cat
+  namespace: demo
+spec:
+  selector:
+    app: cat
+  ports:
+    - port: 3000
+      targetPort: http
+      name: http

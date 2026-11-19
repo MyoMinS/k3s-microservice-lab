@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+set -euo pipefail
+exec > >(tee /var/log/k3s-bootstrap.log) 2>&1
+
+export DEBIAN_FRONTEND=noninteractive
+apt-get update
+apt-get install -y curl ca-certificates git
+
+# Give the small demo instance headroom while compiling the credential plugin.
+fallocate -l 2G /swapfile
+chmod 600 /swapfile
+mkswap /swapfile
+swapon /swapfile
+
+# cloud-provider-aws v1.34.3 requires Go >= 1.25; Ubuntu's golang-go can be older.
+curl -fsSL https://go.dev/dl/go1.25.4.linux-amd64.tar.gz -o /tmp/go.tar.gz
+tar -C /usr/local -xzf /tmp/go.tar.gz
+rm /tmp/go.tar.gz
+
+# Kubelet calls this plugin for ECR image pulls. It uses the EC2 instance role,
+# so no expiring ECR dockerconfig secret is stored in the cluster.
+install -d -m 0755 /usr/local/libexec/k3s
+GOMAXPROCS=2 GOFLAGS=-p=1 GOBIN=/usr/local/libexec/k3s /usr/local/go/bin/go install k8s.io/cloud-provider-aws/cmd/ecr-credential-provider@v1.34.3
+test -x /usr/local/libexec/k3s/ecr-credential-provider
+rm -rf /usr/local/go /root/go
+#swapoff /swapfile
+#rm /swapfile
+install -d -m 0755 /etc/rancher/k3s
+cat > /etc/rancher/k3s/ecr-credential-provider.yaml <<'EOF'
+apiVersion: kubelet.config.k8s.io/v1
+kind: CredentialProviderConfig
+providers:
+  - name: ecr-credential-provider
+    matchImages:
+      - "*.dkr.ecr.*.amazonaws.com"
+      - "*.dkr.ecr.*.amazonaws.com.cn"
+    defaultCacheDuration: 10m
+    apiVersion: credentialprovider.kubelet.k8s.io/v1
+EOF
+
+curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION='v1.34.3+k3s1' sh -s - server \
+  --tls-san '${public_ip}' \
+  --kubelet-arg=image-credential-provider-config=/etc/rancher/k3s/ecr-credential-provider.yaml \
+  --kubelet-arg=image-credential-provider-bin-dir=/usr/local/libexec/k3s
+   # --disable traefik \
+systemctl is-active --quiet k3s

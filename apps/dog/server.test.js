@@ -1,0 +1,19 @@
+'use strict';
+
+const { test, after } = require('node:test');
+const assert = require('node:assert/strict');
+const server = require('./server');
+
+server.listen(0, '127.0.0.1');
+after(() => server.close());
+
+test('GET /dog returns ok', async () => {
+  const response = await fetch(`http://127.0.0.1:${server.address().port}/dog`);
+  assert.equal(response.status, 200);
+  assert.equal(await response.text(), 'ok\n');
+});
+
+test('unknown path returns 404', async () => {
+  const response = await fetch(`http://127.0.0.1:${server.address().port}/cat`);
+  assert.equal(response.status, 404);
+});
