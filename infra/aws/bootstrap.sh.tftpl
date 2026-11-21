@@ -17,12 +17,17 @@ curl -fsSL https://go.dev/dl/go1.25.4.linux-amd64.tar.gz -o /tmp/go.tar.gz
 tar -C /usr/local -xzf /tmp/go.tar.gz
 rm /tmp/go.tar.gz
 
+# Set GOPATH and GOMODCACHE explicitly so Go knows where to store downloaded modules
+export GOCACHE=/tmp/go-build-cache
+export GOPATH=/tmp/go-path
+export GOMODCACHE=/tmp/go-path/pkg/mod
+
 # Kubelet calls this plugin for ECR image pulls. It uses the EC2 instance role,
 # so no expiring ECR dockerconfig secret is stored in the cluster.
 install -d -m 0755 /usr/local/libexec/k3s
 GOMAXPROCS=2 GOFLAGS=-p=1 GOBIN=/usr/local/libexec/k3s /usr/local/go/bin/go install k8s.io/cloud-provider-aws/cmd/ecr-credential-provider@v1.34.3
 test -x /usr/local/libexec/k3s/ecr-credential-provider
-rm -rf /usr/local/go /root/go
+rm -rf /usr/local/go /root/go /tmp/go-path
 #swapoff /swapfile
 #rm /swapfile
 install -d -m 0755 /etc/rancher/k3s
@@ -41,6 +46,6 @@ EOF
 curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION='v1.34.3+k3s1' sh -s - server \
   --tls-san '${public_ip}' \
   --kubelet-arg=image-credential-provider-config=/etc/rancher/k3s/ecr-credential-provider.yaml \
-  --kubelet-arg=image-credential-provider-bin-dir=/usr/local/libexec/k3s
-   # --disable traefik \
+  --kubelet-arg=image-credential-provider-bin-dir=/usr/local/libexec/k3s \
+  --disable traefik \
 systemctl is-active --quiet k3s
