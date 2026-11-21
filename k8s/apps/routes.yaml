@@ -4,6 +4,8 @@ metadata:
   name: animals
   namespace: demo
 spec:
+  hostnames:
+  - "*"
   parentRefs:
     - name: traefik-gateway
       namespace: traefik
