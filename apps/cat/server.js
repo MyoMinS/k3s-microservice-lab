@@ -11,7 +11,7 @@ const server = http.createServer((request, response) => {
   }
   if (path === '/healthz' || path === '/cat' || path === '/cate') {
     response.writeHead(200, { 'content-type': 'text/plain' });
-    response.end('ဝတုတ်မ ဒေါ်ဝင်းပပအောင်\n');
+    response.end('WatokeMa Daw Win Pa Pa Aung\n');
     return;
   }
   response.writeHead(404, { 'content-type': 'text/plain' });
