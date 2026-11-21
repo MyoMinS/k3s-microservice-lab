@@ -16,7 +16,7 @@ spec:
       containers:
         - name: cat
           # CI replaces this value with the ECR URL and the immutable commit SHA.
-          image: 484907514740.dkr.ecr.ap-southeast-1.amazonaws.com/k3s-microservice-lab-cat:4a6db97d9bb67e7c7563f23a41e1e09a2e2e702e
+          image: 484907514740.dkr.ecr.ap-southeast-1.amazonaws.com/k3s-microservice-lab-cat:ef1c6f1112d32897f7affa2190392c732b27fd77
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
