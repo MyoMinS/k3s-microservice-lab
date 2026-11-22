@@ -5,11 +5,11 @@ metadata:
   namespace: demo
 spec:
   hostnames:
-  - "*"
+  - "myomins.website"
   parentRefs:
     - name: traefik-gateway
       namespace: traefik
-      sectionName: web
+  #    sectionName: websecure
   rules:
     # 1. Exact match for /dog
     - matches:
@@ -25,9 +25,6 @@ spec:
         - path:
             type: Exact
             value: /cat
-        - path:
-            type: Exact
-            value: /cate
       backendRefs:
         - name: cat
           port: 3000
