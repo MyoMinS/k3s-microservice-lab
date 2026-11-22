@@ -56,6 +56,14 @@ resource "aws_security_group" "k3s" {
     protocol    = "tcp"
     cidr_blocks = var.http_cidrs
   }
+
+  ingress {
+    description = "HTTPS Gateway"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = var.http_cidrs
+  }
   egress {
     description = "Updates, Git, container registries and AWS APIs"
     from_port   = 0

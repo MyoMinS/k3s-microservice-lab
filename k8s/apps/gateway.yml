@@ -15,7 +15,6 @@ spec:
   - name: websecure
     protocol: HTTPS
     port: 443
-    hostname: myomins.website
     tls:
       mode: Terminate
       certificateRefs:
