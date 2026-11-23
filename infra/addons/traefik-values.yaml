@@ -35,13 +35,14 @@ gatewayClass:
 
 # k3s ServiceLB exposes the LoadBalancer service on the EC2 public IP:80.
 service:
-  type: LoadBalancer
-
+  spec:
+    type: LoadBalancer
+    
 ports:
   web:
     port: 80
     exposedPort: 80
-    default: true
+    asDefault: true
   websecure:
     exposedPort: 443
     port: 443
