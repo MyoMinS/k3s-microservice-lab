@@ -26,9 +26,9 @@ provider "helm" {
 # Terraform must have kubectl and internet access. CRDs intentionally remain
 # after terraform destroy to avoid deleting existing Gateway/HTTPRoute objects.
 resource "terraform_data" "gateway_api" {
-  #triggers_replace = "v1.7.0"
+  #triggers_replace = "v1.6.3"
   provisioner "local-exec" {
-    command = "kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.7.0/standard-install.yaml && kubectl wait --for=condition=Established --timeout=120s crd/gateways.gateway.networking.k8s.io crd/gatewayclasses.gateway.networking.k8s.io crd/httproutes.gateway.networking.k8s.io"
+    command = "kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.6.3/standard-install.yaml && kubectl wait --for=condition=Established --timeout=120s crd/gateways.gateway.networking.k8s.io crd/gatewayclasses.gateway.networking.k8s.io crd/httproutes.gateway.networking.k8s.io"
     environment = {
       KUBECONFIG = var.kubeconfig_path
     }
@@ -58,7 +58,7 @@ resource "helm_release" "traefik" {
   name             = "traefik"
   repository       = "https://traefik.github.io/charts"
   chart            = "traefik"
-  version          = "42.4.1"
+  version          = "37.4.0"
   namespace        = "traefik"
   create_namespace = true
   wait             = true
