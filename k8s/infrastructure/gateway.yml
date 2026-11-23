@@ -4,7 +4,7 @@ metadata:
   name: traefik-gateway
   namespace: traefik
   annotations:
-    cert-manager.io/issuer: "letsencrypt-prod"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   gatewayClassName: traefik
   listeners:
@@ -17,14 +17,15 @@ spec:
   - name: https
     protocol: HTTPS
     port: 443
-    hostname: "api.myomins.website"
+    hostname: "*.myomins.website"
     tls:
       mode: Terminate
       certificateRefs:
-      - kind: Secret
+      - group: ""
+        kind: Secret
         name: app-tls-secret
-      #- kind: Secret
-      #  name: api-tls-secret
+      - kind: Secret
+        name: api-tls-secret
     allowedRoutes:
       namespaces:
         from: All

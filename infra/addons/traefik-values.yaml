@@ -3,31 +3,10 @@ providers:
     enabled: true
   kubernetesIngress:
     enabled: false
+    
 # Helm creates GatewayClass 'traefik' and Gateway 'traefik-gateway' here.
 gateway:
   enabled: false
-#gateway:
-#  enabled: true
-#  name: traefik-gateway
-#  annotations:
-#    cert-manager.io/issuer: "letsencrypt-prod"
-#  listeners:
-#    web:
-#      port: 8000
-#      protocol: HTTP
-#      namespacePolicy:
-#        from: All
-#    websecure:
-#      port: 8443 
-#      hostname: "myomins.website"
-#      protocol: HTTPS
-#      namespacePolicy:
-#        from: All
-#      mode: Terminate
-#      certificateRefs:
-#        - kind: Secret
-#          name: "app-tls-secret"
-
 
 gatewayClass:
   enabled: true
@@ -43,8 +22,20 @@ ports:
     port: 80
     exposedPort: 80
     asDefault: true
+    expose:
+      external: true
+    allowACMEByPass: true
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+          
   websecure:
     exposedPort: 443
     port: 443
     expose:
-      default: true
+      external: true
+    #  default: true
+

@@ -5,7 +5,7 @@ metadata:
   namespace: demo
 spec:
   hostnames:
-  - "myomins.website"
+  - "app.myomins.website"
   parentRefs:
     - name: traefik-gateway
       namespace: traefik

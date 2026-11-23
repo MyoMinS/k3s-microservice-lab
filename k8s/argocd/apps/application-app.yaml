@@ -8,9 +8,7 @@ spec:
   source:
     repoURL: https://github.com/MyoMinS/k3s-microservice-lab.git
     targetRevision: main
-    path: k8s/application/
-    directory:
-      recurse: true
+    path: k8s/application
   destination:
     server: https://kubernetes.default.svc
     namespace: demo
