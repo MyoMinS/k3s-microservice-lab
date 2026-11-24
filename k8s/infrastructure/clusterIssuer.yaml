@@ -14,22 +14,3 @@ spec:
           parentRefs:
           - name: traefik-gateway
             namespace: traefik
----
-#apiVersion: cert-manager.io/v1
-#kind: Issuer
-#metadata:
-#  name: letsencrypt-prod
-#  namespace: traefik
-#spec:
-#  acme:
-#    server: https://acme-v02.api.letsencrypt.org/directory
-#    email: myominsoe432@gmail.com
-#    privateKeySecretRef:
-#      name: letsencrypt-prod-account-key
-#    solvers:
-#    - http01:
-#        gatewayHTTPRoute:
-#          parentRefs:
-#          - name: traefik-gateway
-#            namespace: traefik
-#
