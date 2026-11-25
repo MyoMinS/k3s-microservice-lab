@@ -17,6 +17,9 @@ spec:
           # CI replaces this value with the ECR URL and the immutable commit SHA.
           image: 484907514740.dkr.ecr.ap-southeast-1.amazonaws.com/k3s-microservice-lab-cat:ef1c6f1112d32897f7affa2190392c732b27fd77
           imagePullPolicy: IfNotPresent
+          envFrom:
+          - secretRef:
+              name: my-secret
           ports:
             - containerPort: 3000
               name: http

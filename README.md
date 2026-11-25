@@ -80,3 +80,8 @@ terraform -chdir=infra/addons fmt -check -recursive
 ```
 
 Delete the Argo CD Application first, then `terraform -chdir=infra/addons destroy`, then `terraform -chdir=infra/aws destroy`. This terminates the EC2 instance and deletes the two ECR repositories **only if empty**; delete their images before destroying to avoid Terraform deletion errors. Gateway API CRDs may remain on the cluster until it is terminated.
+
+
+```sh
+kubectl create secret generic awssm-secret --from-file=./access-key  --from-file=./secret-access-key
+```

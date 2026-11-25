@@ -37,7 +37,7 @@ resource "terraform_data" "gateway_api" {
 
 resource "terraform_data" "helm_repo_update" {
   provisioner "local-exec" {
-    command = "helm repo add argo https://argoproj.github.io/argo-helm && helm repo add grafana https://grafana.github.io/helm-charts && helm repo update"
+    command = "helm repo update"
   }
 }
 
@@ -77,4 +77,17 @@ resource "helm_release" "argocd" {
   wait             = true
   timeout          = 600
   values           = [file("${path.module}/argocd-values.yaml")]
+}
+
+
+resource "helm_release" "external-secrets" {
+  name             = "external-secrets"
+  repository       = "https://charts.external-secrets.io"
+  chart            = "external-secrets"
+  version          = "2.15.0"
+  namespace        = "external-secrets"
+  create_namespace = true
+  wait             = true
+  timeout          = 600
+  values           = [file("${path.module}/external-secrets-values.yaml")]
 }
