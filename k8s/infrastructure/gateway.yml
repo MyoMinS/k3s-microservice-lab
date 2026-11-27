@@ -14,18 +14,29 @@ spec:
     allowedRoutes:
       namespaces:
         from: All
-  - name: https
+  - name: panel-api
     protocol: HTTPS
     port: 443
-    hostname: "*.myomins.website"
+    hostname: "api.myomins.website"
     tls:
       mode: Terminate
       certificateRefs:
       - group: ""
         kind: Secret
-        name: app-tls-secret
-      - kind: Secret
-        name: api-tls-secret
+        name: panel-api-tls-secret
+    allowedRoutes:
+      namespaces:
+        from: All
+  - name: user-api
+    protocol: HTTPS
+    port: 443
+    hostname: "app.myomins.website"
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - group: ""
+        kind: Secret
+        name: user-api-tls-secret
     allowedRoutes:
       namespaces:
         from: All
