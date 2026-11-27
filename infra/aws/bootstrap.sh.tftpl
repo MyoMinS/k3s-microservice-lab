@@ -43,7 +43,7 @@ providers:
     apiVersion: credentialprovider.kubelet.k8s.io/v1
 EOF
 
-curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION='v1.34.3+k3s1' sh -s - server \
+curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION='v1.37.2+k3s1' sh -s - server \
   --tls-san '${public_ip}' \
   --kubelet-arg=image-credential-provider-config=/etc/rancher/k3s/ecr-credential-provider.yaml \
   --kubelet-arg=image-credential-provider-bin-dir=/usr/local/libexec/k3s \
