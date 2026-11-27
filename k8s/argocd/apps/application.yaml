@@ -11,8 +11,6 @@ spec:
     repoURL: https://github.com/MyoMinS/k3s-microservice-lab.git
     targetRevision: main
     path: k8s/application/overlays
-    directory:
-      recurse: true
   destination:
     server: https://kubernetes.default.svc
     namespace: demo
