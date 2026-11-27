@@ -17,7 +17,7 @@ terraform {
 }
 
 provider "helm" {
-  kubernetes {
+  kubernetes  {
     config_path = var.kubeconfig_path
   }
 }
@@ -25,15 +25,15 @@ provider "helm" {
 # Gateway API CRDs are not shipped with k3s or Traefik. The host running
 # Terraform must have kubectl and internet access. CRDs intentionally remain
 # after terraform destroy to avoid deleting existing Gateway/HTTPRoute objects.
-resource "terraform_data" "gateway_api" {
-  triggers_replace = "v1.6.3"
-  provisioner "local-exec" {
-    command = "kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.6.3/standard-install.yaml && kubectl wait --for=condition=Established --timeout=120s crd/gateways.gateway.networking.k8s.io crd/gatewayclasses.gateway.networking.k8s.io crd/httproutes.gateway.networking.k8s.io"
-    environment = {
-      KUBECONFIG = var.kubeconfig_path
-    }
-  }
-}
+#resource "terraform_data" "gateway_api" {
+#  triggers_replace = "v1.6.3"
+#  provisioner "local-exec" {
+#    command = "kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.6.3/standard-install.yaml && kubectl wait --for=condition=Established --timeout=120s crd/gateways.gateway.networking.k8s.io crd/gatewayclasses.gateway.networking.k8s.io crd/httproutes.gateway.networking.k8s.io"
+#    environment = {
+#      KUBECONFIG = var.kubeconfig_path
+#    }
+#  }
+#}
 
 resource "terraform_data" "helm_repo_update" {
   provisioner "local-exec" {
@@ -64,7 +64,7 @@ resource "helm_release" "traefik" {
   wait             = true
   timeout          = 600
   values           = [file("${path.module}/traefik-values.yaml")]
-  depends_on       = [terraform_data.gateway_api]
+#  depends_on       = [terraform_data.gateway_api]
 }
 
 resource "helm_release" "argocd" {

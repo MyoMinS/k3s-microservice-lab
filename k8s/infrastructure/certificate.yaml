@@ -3,7 +3,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: app-tls-secret
-  namespace: traefik
+#  namespace: traefik
 spec:
   secretName: app-tls-secret
   issuerRef:
@@ -17,7 +17,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: api-tls-secret
-  namespace: traefik
+#  namespace: traefik
 spec:
   secretName: api-tls-secret
   issuerRef:

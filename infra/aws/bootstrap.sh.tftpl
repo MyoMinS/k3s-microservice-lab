@@ -25,7 +25,7 @@ export GOMODCACHE=/tmp/go-path/pkg/mod
 # Kubelet calls this plugin for ECR image pulls. It uses the EC2 instance role,
 # so no expiring ECR dockerconfig secret is stored in the cluster.
 install -d -m 0755 /usr/local/libexec/k3s
-GOMAXPROCS=2 GOFLAGS=-p=1 GOBIN=/usr/local/libexec/k3s /usr/local/go/bin/go install k8s.io/cloud-provider-aws/cmd/ecr-credential-provider@v1.34.3
+GOMAXPROCS=2 GOFLAGS=-p=1 GOBIN=/usr/local/libexec/k3s /usr/local/go/bin/go install k8s.io/cloud-provider-aws/cmd/ecr-credential-provider@v1.37.0
 test -x /usr/local/libexec/k3s/ecr-credential-provider
 rm -rf /usr/local/go /root/go /tmp/go-path
 #swapoff /swapfile

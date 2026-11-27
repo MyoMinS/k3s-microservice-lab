@@ -30,11 +30,11 @@ patches:
     patch: |-
       - op: replace
         path: /spec/template/spec/containers/0/ports/0/containerPort
-        value: 3001
+        value: 3000
   - target:
       kind: Service
       name: api 
     patch: |-
       - op: replace
         path: /spec/ports/0/port
-        value: 3001
+        value: 3000
