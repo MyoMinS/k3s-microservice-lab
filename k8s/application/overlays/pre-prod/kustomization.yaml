@@ -1,6 +1,40 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - dog.yaml
-  - cat.yaml
-  - routes.yaml
+- ../../base
+
+replicas:
+- count: 1
+  name: api
+
+namespace: demo
+
+namePrefix: user-
+
+images:
+- name: 484907514740.dkr.ecr.ap-southeast-1.amazonaws.com/k3s-microservice-lab-cat:ef1c6f1112d32897f7affa2190392c732b27fd77
+  newName: 484907514740.dkr.ecr.ap-southeast-1.amazonaws.com/k3s-microservice-lab-dog
+  newTag: ef1c6f1112d32897f7affa2190392c732b27fd77
+
+labels:
+- includeSelectors: true
+  pairs:
+    project: k3s
+    app: user-api
+
+
+patches:
+  - target:
+      kind: Deployment
+      name: api
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/ports/0/containerPort
+        value: 3000
+  - target:
+      kind: Service
+      name: api 
+    patch: |-
+      - op: replace
+        path: /spec/ports/0/port
+        value: 3000
